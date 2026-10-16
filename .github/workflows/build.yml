@@ -64,6 +64,8 @@ jobs:
           CONFIG_PACKAGE_luci-app-firewall=y
           CONFIG_PACKAGE_luci-app-opkg=y
           CONFIG_PACKAGE_zram-swap=y
+          # 禁用前端模板字节码强转，避免宿主机工具链动态库链接问题
+          CONFIG_LUCI_SRCDIET=n
           CONF
           # 修复上游 rpcd-mod-luci 误要求 CMake 3.31 导致的编译中断
           find feeds/ -name CMakeLists.txt -exec sed -i -E 's/cmake_minimum_required\(VERSION [0-9\.]+\)/cmake_minimum_required(VERSION 3.20)/g' {} + || true
@@ -79,6 +81,8 @@ jobs:
       - name: Compile the Firmware
         run: |
           cd openwrt
+          # 确保 host 工具能找到本地编译的 libucode 等动态共享库
+          export LD_LIBRARY_PATH="$PWD/staging_dir/host/lib:$PWD/staging_dir/host/lib64:$LD_LIBRARY_PATH"
           echo -e "$(nproc) thread compile"
           make -j$(nproc) || make -j1 V=s
 

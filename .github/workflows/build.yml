@@ -69,6 +69,8 @@ jobs:
           CONF
           # 修复上游 rpcd-mod-luci 误要求 CMake 3.31 导致的编译中断
           find feeds/ -name CMakeLists.txt -exec sed -i -E 's/cmake_minimum_required\(VERSION [0-9\.]+\)/cmake_minimum_required(VERSION 3.20)/g' {} + || true
+          # 彻底禁用 LuCI 的 host 端 ucode 预编译，杜绝动态库缺失报错
+          find feeds/luci/ -name "luci.mk" -exec sed -i "s/ifeq (\$(LUCI_MINIFY_UT),1)/ifeq (0,1)/g" {} + || true
           make defconfig
 
       - name: Download Package Dependencies
@@ -82,6 +84,8 @@ jobs:
         run: |
           cd openwrt
           # 确保 host 工具能找到本地编译的 libucode 等动态共享库
+          sudo sh -c "echo \"$PWD/staging_dir/host/lib\" > /etc/ld.so.conf.d/openwrt-host.conf"
+          sudo ldconfig || true
           export LD_LIBRARY_PATH="$PWD/staging_dir/host/lib:$PWD/staging_dir/host/lib64:$LD_LIBRARY_PATH"
           echo -e "$(nproc) thread compile"
           make -j$(nproc) || make -j1 V=s

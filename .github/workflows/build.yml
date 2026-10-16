@@ -41,6 +41,7 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/kimocoder/qsdk_build.git openwrt
           cd openwrt
+          sed -i '/kenzo/d; /small/d' feeds.conf.default
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 

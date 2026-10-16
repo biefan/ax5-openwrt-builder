@@ -44,7 +44,7 @@ jobs:
           cd openwrt
           # 移除失效与冲突的 feed，换成有效的 nss-packages 源
           sed -i '/kenzo/d; /small/d' feeds.conf.default
-          sed -i 's|https://github.com/JiaY-shi/nss-packages.git;k6.6|https://github.com/JuliusBairaktaris/nss-packages.git;edma-nss|g' feeds.conf.default
+          sed -i '/nss_packages/d' feeds.conf.default
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 

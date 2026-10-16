@@ -64,6 +64,9 @@ jobs:
           CONFIG_PACKAGE_luci-app-firewall=y
           CONFIG_PACKAGE_luci-app-opkg=y
           CONFIG_PACKAGE_zram-swap=y
+          # 禁用与 6.6 内核冲突的 vendor qca-nss-drv，使用原生 PPE flowtable
+          CONFIG_PACKAGE_kmod-qca-nss-drv=n
+          CONFIG_PACKAGE_kmod-qca-nss-ecm=n
           # 禁用前端模板字节码强转，避免宿主机工具链动态库链接问题
           CONFIG_LUCI_SRCDIET=n
           CONF

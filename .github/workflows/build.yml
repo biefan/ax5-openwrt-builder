@@ -42,6 +42,8 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/kimocoder/qsdk_build.git openwrt
           cd openwrt
+          # 更新 ucode 包定义，匹配最新 luci 所需的 ucode (>= 2026.02.27)
+          curl -sSL https://raw.githubusercontent.com/openwrt/openwrt/master/package/utils/ucode/Makefile > package/utils/ucode/Makefile
           # 移除失效与冲突的 feed，换成有效的 nss-packages 源
           sed -i '/kenzo/d; /small/d' feeds.conf.default
           sed -i '/nss_packages/d' feeds.conf.default

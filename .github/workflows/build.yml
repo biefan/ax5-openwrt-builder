@@ -65,6 +65,10 @@ jobs:
           CONFIG_PACKAGE_wpad-basic-wolfssl=y
           CONFIG_PACKAGE_luci=y
           CONFIG_PACKAGE_luci-theme-bootstrap=y
+          CONFIG_PACKAGE_luci-i18n-base-zh-cn=y
+          CONFIG_PACKAGE_luci-i18n-firewall-zh-cn=y
+          CONFIG_PACKAGE_luci-i18n-package-manager-zh-cn=y
+          CONFIG_LUCI_LANG_zh_Hans=y
           CONFIG_PACKAGE_luci-app-firewall=y
           CONFIG_PACKAGE_luci-app-opkg=y
           CONFIG_PACKAGE_zram-swap=y
@@ -85,6 +89,11 @@ jobs:
           CONF
           # 修复上游 rpcd-mod-luci 误要求 CMake 3.31 导致的编译中断
           find feeds/ -name CMakeLists.txt -exec sed -i -E 's/cmake_minimum_required\(VERSION [0-9\.]+\)/cmake_minimum_required(VERSION 3.20)/g' {} + || true
+          # 针对红米 AX5 256MB 内存优化：注入 coherent_pool=8M cma=16M 解决 ath11k DMA 内存不足报错
+          sed -i "s/coherent_pool=2M/coherent_pool=8M cma=16M/g" target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq6018-xiaomi.dtsi
+          # 禁用 ath11k 极其吃内存的 monitor/ftm 调试环
+          mkdir -p package/base-files/files/etc/modules.d
+          echo "options ath11k ftm_mode=0" > package/base-files/files/etc/modules.d/ath11k-opt
           # 彻底禁用 LuCI 的 host 端 ucode 预编译，杜绝动态库缺失报错
           find feeds/luci/ -name "luci.mk" -exec sed -i "s/ifeq (\$(LUCI_MINIFY_UT),1)/ifeq (0,1)/g" {} + || true
           make defconfig

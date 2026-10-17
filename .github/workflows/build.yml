@@ -84,6 +84,10 @@ jobs:
           CONFIG_PACKAGE_chinadns-ng=y
           CONFIG_PACKAGE_ipt2socks=y
           CONFIG_PACKAGE_tcping=y
+          # 解决 curl 依赖 mbedtls 3.2.0 报错：强制 libcurl 使用 openssl 作为加解密后端
+          CONFIG_LIBCURL_OPENSSL=y
+          CONFIG_LIBCURL_MBEDTLS=n
+          CONFIG_PACKAGE_libopenssl=y
           # 显式补全 ucode 基础依赖，防止 opkg 打包时版本找不到
           CONFIG_PACKAGE_ucode=y
           CONFIG_PACKAGE_libucode=y
